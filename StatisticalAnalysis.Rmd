@@ -1,0 +1,310 @@
+---
+title: "Scientific Methods Project Statistical Analysis"
+subtitel: "A Comperative Study of Different Wheel Types for Mobiel Robots Climbing a Ramp"
+output:
+  html_document:
+    keep_md: true
+---
+
+```{r}
+#Import libraries
+library("dplyr")
+library("ggpubr")
+library("gridExtra")
+```
+
+
+```{r setup-chunk, include=FALSE}
+knitr::opts_chunk$set(dev = "png",
+                      dpi = 300,
+                      echo = FALSE,
+                      cache = TRUE)
+```
+
+
+
+```{r}
+#load data
+rwheels_0 <- read.csv("RWlog0.txt", stringsAsFactors=T)
+rwheels_10 <- read.csv("RWlog10.txt", stringsAsFactors=T)
+rwheels_20 <- read.csv("RWlog20.txt", stringsAsFactors=T)
+rwheels_30 <- read.csv("RWlog30.txt", stringsAsFactors=T)
+pbelts_0 <- read.csv("PBlog0.txt", stringsAsFactors=T)
+pbelts_10 <- read.csv("PBlog10.txt", stringsAsFactors=T)
+rbelts_0 <- read.csv("RBlog0.txt", stringsAsFactors=T)
+rbelts_10 <- read.csv("RBlog10.txt", stringsAsFactors=T)
+rbelts_20 <- read.csv("RBlog20.txt", stringsAsFactors=T)
+rbelts_30 <- read.csv("RBlog30.txt", stringsAsFactors=T)
+pwheels_0 <- read.csv("PWlog0.txt", stringsAsFactors=T)
+```
+
+```{r}
+#normalize data
+norm_rwheels_0 <- rwheels_0$runtime/mean(rwheels_0$runtime)
+norm_rwheels_10 <- rwheels_10$runtime/mean(rwheels_0$runtime)
+norm_rwheels_20 <- rwheels_20$runtime/mean(rwheels_0$runtime)
+norm_rwheels_30 <- rwheels_30$runtime/mean(rwheels_0$runtime)
+norm_pbelts_0 <- pbelts_0$runtime/mean(pbelts_0$runtime)
+norm_pbelts_10 <- pbelts_10$runtime/mean(pbelts_0$runtime)
+norm_rbelts_0 <-  rbelts_0$runtime/mean(rbelts_0$runtime)
+norm_rbelts_10 <-  rbelts_10$runtime/mean(rbelts_0$runtime)
+norm_rbelts_20 <-  rbelts_20$runtime/mean(rbelts_0$runtime)
+norm_rbelts_30 <-  rbelts_30$runtime/mean(rbelts_0$runtime)
+norm_pwheels_0 <-  pwheels_0$runtime/mean(pwheels_0$runtime)
+
+```
+
+
+```{r}
+#create an additional columns with the wheel type, the group of wheel, the normalized values and the slope
+rwheels_0$type <- c("rwheels_0")
+rwheels_0$group <- c("rubber_wheels")
+rwheels_0$normalized <- c(norm_rwheels_0)
+rwheels_0$slope <- c(0)
+
+rwheels_10$type <- c("rwheels_10")
+rwheels_10$group <- c("rubber_wheels")
+rwheels_10$normalized <- c(norm_rwheels_10)
+rwheels_10$slope <- c(10)
+
+rwheels_20$type <- c("rwheels_20")
+rwheels_20$group <- c("rubber_wheels")
+rwheels_20$normalized <- c(norm_rwheels_20)
+rwheels_20$slope <- c(20)
+
+rwheels_30$type <- c("rwheels_30")
+rwheels_30$group <- c("rubber_wheels")
+rwheels_30$normalized <- c(norm_rwheels_30)
+rwheels_30$slope <- c(30)
+
+
+pbelts_0$type <- c("pbelts_0")
+pbelts_0$group <- c("plastic_belts")
+pbelts_0$normalized <- c(norm_pbelts_0)
+pbelts_0$slope <- c(0)
+
+pbelts_10$type <- c("pbelts_10")
+pbelts_10$group <- c("plastic_belts")
+pbelts_10$normalized <- c(norm_pbelts_10)
+pbelts_10$slope <- c(10)
+
+
+rbelts_0$type <- c("rbelts_0")
+rbelts_0$group <- c("rubber_belts")
+rbelts_0$normalized <- c(norm_rbelts_0)
+rbelts_0$slope <- c(0)
+
+rbelts_10$type <- c("rbelts_10")
+rbelts_10$group <- c("rubber_belts")
+rbelts_10$normalized <- c(norm_rbelts_10)
+rbelts_10$slope <- c(10)
+
+rbelts_20$type <- c("rbelts_20")
+rbelts_20$group <- c("rubber_belts")
+rbelts_20$normalized <- c(norm_rbelts_20)
+rbelts_20$slope <- c(20)
+
+rbelts_30$type <- c("rbelts_30")
+rbelts_30$group <- c("rubber_belts")
+rbelts_30$normalized <- c(norm_rbelts_30)
+rbelts_30$slope <- c(30)
+rbelts_30 <- rbelts_30[-c(18), ] #exclude
+
+pwheels_0$type <- c("pwheels_0")
+pwheels_0$group <- c("plastic_wheels")
+pwheels_0$normalized <- c(norm_pwheels_0)
+pwheels_0$slope <- c(0)
+
+
+```
+
+```{r}
+#combine the data into one dataframe
+new <- rbind(rwheels_0, rwheels_10,rwheels_20,rwheels_30,pbelts_0,pbelts_10,rbelts_0,rbelts_10,rbelts_20,rbelts_30,pwheels_0)
+```
+
+
+```{r}
+#test if data is normal distributed and visualize distribution in a Q-Q plot
+ggqqplot(rwheels_0$runtime)
+shapiro.test(rwheels_0$runtime)
+
+ggqqplot(rwheels_10$runtime)
+shapiro.test(rwheels_10$runtime)
+
+ggqqplot(rwheels_20$runtime)
+shapiro.test(rwheels_20$runtime)
+
+ggqqplot(rwheels_30$runtime)
+shapiro.test(rwheels_30$runtime)
+
+ggqqplot(pbelts_0$runtime)
+shapiro.test(pbelts_0$runtime)
+
+ggqqplot(pbelts_10$runtime)
+shapiro.test(pbelts_10$runtime)
+
+ggqqplot(rbelts_0$runtime)
+shapiro.test(rbelts_0$runtime)
+
+ggqqplot(rbelts_10$runtime)
+shapiro.test(rbelts_10$runtime)
+
+ggqqplot(rbelts_20$runtime)
+shapiro.test(rbelts_20$runtime)
+
+ggqqplot(rbelts_30$runtime)
+shapiro.test(rbelts_30$runtime)
+
+ggqqplot(pwheels_0$runtime)
+shapiro.test(pwheels_0$runtime)
+```
+
+
+```{r}
+library(dplyr)
+group_by(new, type) %>%
+  summarise(
+    count = n(),
+    mean = mean(runtime, na.rm = TRUE),
+    sd = sd(runtime, na.rm = TRUE)
+  )
+```
+
+
+```{r}
+library(dplyr)
+group_by(new, type) %>%
+  summarise(
+    count = n(),
+    mean = mean(normalized, na.rm = TRUE),
+    sd = sd(normalized, na.rm = TRUE)
+  )
+```
+
+
+```{r}
+# Compute the analysis of variance
+res.aov <- aov(runtime ~ type, data = new)
+# Summary of the analysis
+summary(res.aov)
+```
+
+
+```{r}
+#Tukey multiple comparisons of means
+TukeyHSD(res.aov)
+```
+
+
+
+```{r}
+# Compute the analysis of variance
+res.aov_2 <- aov(normalized ~ type, data = new)
+# Summary of the analysis
+summary(res.aov_2)
+```
+
+```{r}
+TukeyHSD(res.aov_2)
+```
+
+```{r}
+mean.data <- new %>%
+  group_by(type, slope) %>%
+  summarise(
+      normalized = mean(normalized)
+  )
+```
+
+
+```{r}
+#Non-parametric test
+res_3 <- kruskal.test(normalized ~ type, data = new)
+res_3
+```
+
+
+
+
+```{r}
+#pairwise wilcox test
+pairwise.wilcox.test(new$normalized, new$type ,
+                 p.adjust.method = "BH")
+```
+
+
+```{r}
+#calculate the mean and standard deviation  and create a new data frame
+#used for plotting
+f1 <- function(x) c(Mean = mean(x), SD = sd(x))
+plot_df <- do.call(data.frame, aggregate(runtime~type + group + slope, new, f1))
+```
+
+```{r}
+#change the order of the group factors
+plot_df <- plot_df  %>% 
+  mutate(group=factor(group, c("rubber_belts","rubber_wheels","plastic_belts","plastic_wheels")))
+```
+
+
+```{r}
+#barplot of the normalized data
+ggplot(plot_df, aes(x=as.factor(slope), y=runtime.Mean, fill=group)) +
+  geom_bar(position=position_dodge(preserve="single"), stat="identity", colour='black') +
+  geom_errorbar(aes(ymin=runtime.Mean-runtime.SD, ymax=runtime.Mean+runtime.SD), width=.2,position=position_dodge(.9, preserve="single"))   + scale_fill_grey(start=0.6, end=0.99) + theme_classic() + xlab("slope[°]") + ylab("runtime [ms]")  
+```
+```{r}
+#calculate the mean and standard deviation  and create a new data frame
+#used for plotting
+f1 <- function(x) c(Mean = mean(x), SD = sd(x))
+plot_df_n <- do.call(data.frame, aggregate(normalized~type + group + slope, new, f1))
+```
+
+```{r}
+#change the order of the group factors
+plot_df_n <- plot_df_n  %>% 
+  mutate(group=factor(group, c("rubber_belts","rubber_wheels","plastic_belts","plastic_wheels")))
+```
+
+```{r}
+#barplot of the normalized data
+ggplot(plot_df_n, aes(x=as.factor(slope), y=normalized.Mean, fill=group)) +
+  geom_bar(position=position_dodge(preserve="single"), stat="identity", colour='black') +
+  geom_errorbar(aes(ymin=normalized.Mean-normalized.SD, ymax=normalized.Mean+normalized.SD), width=.2,position=position_dodge(.9, preserve="single"))   + scale_fill_grey(start=0.6, end=0.99) + theme_classic() + xlab("slope[°]") + ylab("normalized runtime")  
+```
+
+
+```{r}
+#change order of the group factors
+new <- new %>% 
+  mutate(group=factor(group, c("rubber_belts","rubber_wheels","plastic_belts","plastic_wheels")))
+```
+
+
+```{r}
+#boxplot of normailzed data
+r1 <-  ggboxplot(data = new[which(new$slope==0),], x = "group", y = "normalized", 
+          fill = "type",
+          ylab = "normalized Runtime", xlab = "wheel type") + 
+   theme(legend.position = "none", axis.text.x = element_text(angle = 90)) + ggtitle("slope 0°") + scale_fill_brewer(palette = "Greys")
+
+r2 <-  ggboxplot(data = new[which(new$slope==10),], x = "group", y = "normalized", 
+          fill = "type",
+          ylab = "normalized Runtime", xlab = "wheel type") + 
+   theme(legend.position = "none", axis.text.x = element_text(angle = 90)) + ggtitle("slope 10°") + scale_fill_brewer(palette = "Greys")
+
+r3 <-  ggboxplot(data = new[which(new$slope==20),], x = "group", y = "normalized", 
+          fill = "type",
+          ylab = "normalized Runtime", xlab = "wheel type") + 
+   theme(legend.position = "none", axis.text.x = element_text(angle = 90)) + ggtitle("slope 20°") + scale_fill_brewer(palette = "Greys")
+
+r4 <-  ggboxplot(data = new[which(new$slope==30),], x = "group", y = "normalized", 
+          fill = "type",
+          ylab = "normalized Runtime", xlab = "wheel type") + 
+   theme(legend.position = "none", axis.text.x = element_text(angle = 90)) + ggtitle("slope 30°") + scale_fill_brewer(palette = "Greys")
+
+grid.arrange(r1,r2,r3,r4,ncol=4,nrow=1)
+```
+
+
